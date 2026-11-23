@@ -17,14 +17,19 @@ class AppColors {
 }
 
 class AppStyle {
-  static ThemeData light({String? fontFamily}) {
+  static ThemeData light({String? fontFamily, ColorScheme? colorScheme}) {
+    final scheme = colorScheme ?? AppColors.lightColorScheme;
     return ThemeData(
-      colorScheme: AppColors.lightColorScheme,
+      colorScheme: scheme,
       useMaterial3: true,
       fontFamily: fontFamily,
       visualDensity: VisualDensity.standard,
       appBarTheme: AppBarTheme(
-        //elevation: 0,
+        // AppBar 固定使用 surface 色，滚动时不切换成 surfaceContainer，
+        // 保证与原生标题栏始终同色
+        backgroundColor: scheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
           fontFamily: fontFamily,
@@ -39,9 +44,10 @@ class AppStyle {
     );
   }
 
-  static ThemeData darkTheme({String? fontFamily}) {
+  static ThemeData darkTheme({String? fontFamily, ColorScheme? colorScheme}) {
+    final scheme = colorScheme ?? AppColors.darkColorScheme;
     return ThemeData.dark().copyWith(
-      colorScheme: AppColors.darkColorScheme,
+      colorScheme: scheme,
       visualDensity: VisualDensity.standard,
       textTheme: ThemeData.dark().textTheme.apply(
             fontFamily: fontFamily,
@@ -50,7 +56,11 @@ class AppStyle {
             fontFamily: fontFamily,
           ),
       appBarTheme: AppBarTheme(
-        //elevation: 0,
+        // AppBar 固定使用 surface 色，滚动时不切换成 surfaceContainer，
+        // 保证与原生标题栏始终同色
+        backgroundColor: scheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 0,
 
         centerTitle: true,
         titleTextStyle: TextStyle(

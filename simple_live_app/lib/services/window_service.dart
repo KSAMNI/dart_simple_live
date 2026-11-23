@@ -8,6 +8,7 @@ import 'package:simple_live_app/app/event_bus.dart';
 import 'package:simple_live_app/app/log.dart';
 import 'package:simple_live_app/app/utils.dart';
 import 'package:simple_live_app/services/local_storage_service.dart';
+import 'package:simple_live_app/app/app_style.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter/services.dart';
 
@@ -17,9 +18,6 @@ class WindowService extends GetxService
   static WindowService get instance => Get.find<WindowService>();
 
   static const MethodChannel _windowChannel = MethodChannel("slive/window");
-
-  /// 深色模式下标题栏与内容区共用这个底色，避免出现一条浅色分隔线
-  static const Color darkTitleBarColor = Color(0xFF121212);
 
   bool isPIP = false;
   bool isMaxAuto = false;
@@ -36,11 +34,15 @@ class WindowService extends GetxService
       return;
     }
     final isDark = _resolveDarkTitleBar();
+    // AppBar 在 M3 下使用 colorScheme.surface，标题栏取同一个值。
+    final scheme = isDark
+        ? AppColors.darkColorScheme
+        : AppColors.lightColorScheme;
     try {
       await _windowChannel.invokeMethod("setTitleBarTheme", {
         "dark": isDark,
         "useCaptionColor": isDark,
-        "captionColor": _toColorRef(darkTitleBarColor),
+        "captionColor": _toColorRef(scheme.surface),
         "textColor": _toColorRef(Colors.white),
       });
     } catch (e) {

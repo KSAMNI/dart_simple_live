@@ -192,15 +192,31 @@ class MyApp extends StatelessWidget {
         );
         darkColorScheme = ColorScheme.fromSeed(seedColor: styleColor, brightness: Brightness.dark);
       }
+      // 原生标题栏（Windows）取与 AppBar 相同的 surface 色，
+      // 这里把实际生效的 ColorScheme 暴露给 WindowService。
+      final schemeChanged =
+          AppColors.lightColorScheme != lightColorScheme ||
+              AppColors.darkColorScheme != darkColorScheme;
+      AppColors.lightColorScheme = lightColorScheme;
+      AppColors.darkColorScheme = darkColorScheme;
+      if (schemeChanged &&
+          Platform.isWindows &&
+          Get.isRegistered<WindowService>()) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          WindowService.instance.syncTitleBarTheme();
+        });
+      }
       return Obx(
         () => GetMaterialApp(
           title: "Slive",
           theme: AppStyle.light(
             fontFamily: AppStyleSettingController.instance.curFontName.value,
-          ).copyWith(colorScheme: lightColorScheme),
+            colorScheme: lightColorScheme,
+          ),
           darkTheme: AppStyle.darkTheme(
             fontFamily: AppStyleSettingController.instance.curFontName.value,
-          ).copyWith(colorScheme: darkColorScheme),
+            colorScheme: darkColorScheme,
+          ),
           themeMode: ThemeMode.values[Get.find<AppSettingsController>().themeMode.value],
           initialRoute: RoutePath.kIndex,
           getPages: AppPages.routes,
